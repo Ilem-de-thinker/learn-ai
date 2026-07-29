@@ -60,7 +60,7 @@ export const AdminDashboard: React.FC = () => {
       setRegistrationsData({ ...result, stats });
     } catch (err) {
       console.error('Fetch error:', err);
-      setActionMessage({ type: 'error', text: 'Failed to load registrations. Check database connection.' });
+      setActionMessage({ type: 'error', text: err instanceof Error ? err.message : 'Failed to load registrations.' });
     } finally {
       setIsLoading(false);
     }

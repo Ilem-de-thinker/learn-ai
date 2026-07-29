@@ -1,24 +1,6 @@
-const RAW_URL = 'postgresql://neondb_owner:npg_D9fTCOhBsa5H@ep-super-queen-ax0uh0jj-pooler.c-4.us-east-2.aws.neon.tech/neondb?sslmode=require&channel_binding=require';
-const CONN_STRING = RAW_URL.split('?')[0];
-const NEON_HOST = new URL(RAW_URL).hostname.replace('-pooler', '');
-const SQL_ENDPOINT = `https://${NEON_HOST}/sql`;
+import { neon } from '@neondatabase/serverless';
 
-async function query(queryText: string, params?: any[]) {
-  const res = await fetch(SQL_ENDPOINT, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Neon-Connection-String': CONN_STRING,
-    },
-    body: JSON.stringify({ query: queryText, params }),
-  });
-  if (!res.ok) {
-    const text = await res.text();
-    throw new Error(`Neon query failed (${res.status}): ${text}`);
-  }
-  const result = await res.json();
-  return result;
-}
+const sql = neon('postgresql://neondb_owner:npg_D9fTCOhBsa5H@ep-super-queen-ax0uh0jj-pooler.c-4.us-east-2.aws.neon.tech/neondb?sslmode=require&channel_binding=require');
 
 export interface RegistrationRecord {
   id: string;
@@ -35,50 +17,51 @@ export interface RegistrationRecord {
 }
 
 export async function initDatabase() {
-  await query(`CREATE TABLE IF NOT EXISTS registrations (
-    id VARCHAR(50) PRIMARY KEY,
-    full_name VARCHAR(255) NOT NULL,
-    email VARCHAR(255) NOT NULL,
-    phone VARCHAR(50) NOT NULL,
-    country VARCHAR(100) NOT NULL,
-    state VARCHAR(100) NOT NULL,
-    occupation VARCHAR(255) NOT NULL,
-    experience VARCHAR(20) NOT NULL CHECK (experience IN ('Beginner', 'Intermediate', 'Advanced')),
-    source VARCHAR(100) NOT NULL,
-    referral_code VARCHAR(100),
-    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
-  )`);
+  await sql`
+    CREATE TABLE IF NOT EXISTS registrations (
+      id VARCHAR(50) PRIMARY KEY,
+      full_name VARCHAR(255) NOT NULL,
+      email VARCHAR(255) NOT NULL,
+      phone VARCHAR(50) NOT NULL,
+      country VARCHAR(100) NOT NULL,
+      state VARCHAR(100) NOT NULL,
+      occupation VARCHAR(255) NOT NULL,
+      experience VARCHAR(20) NOT NULL CHECK (experience IN ('Beginner', 'Intermediate', 'Advanced')),
+      source VARCHAR(100) NOT NULL,
+      referral_code VARCHAR(100),
+      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    )
+  `;
   try {
-    await query(`CREATE UNIQUE INDEX IF NOT EXISTS idx_registrations_email ON registrations (email)`);
+    await sql`CREATE UNIQUE INDEX IF NOT EXISTS idx_registrations_email ON registrations (email)`;
   } catch {}
 }
 
 export async function getAllRegistrations(): Promise<RegistrationRecord[]> {
-  const rows = await query(`SELECT * FROM registrations ORDER BY created_at DESC`);
+  const rows = await sql`SELECT * FROM registrations ORDER BY created_at DESC`;
   return rows.map(rowToRecord);
 }
 
 export async function getRegistrationByEmail(email: string): Promise<RegistrationRecord | null> {
-  const rows = await query(`SELECT * FROM registrations WHERE email = $1`, [email.toLowerCase()]);
+  const rows = await sql`SELECT * FROM registrations WHERE email = ${email.toLowerCase()}`;
   return rows.length ? rowToRecord(rows[0]) : null;
 }
 
 export async function insertRegistration(record: RegistrationRecord): Promise<void> {
-  await query(
-    `INSERT INTO registrations (id, full_name, email, phone, country, state, occupation, experience, source, referral_code, created_at)
-     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)`,
-    [record.id, record.fullName, record.email, record.phone, record.country, record.state, record.occupation, record.experience, record.source, record.referralCode || null, record.createdAt]
-  );
+  await sql`
+    INSERT INTO registrations (id, full_name, email, phone, country, state, occupation, experience, source, referral_code, created_at)
+    VALUES (${record.id}, ${record.fullName}, ${record.email}, ${record.phone}, ${record.country}, ${record.state}, ${record.occupation}, ${record.experience}, ${record.source}, ${record.referralCode || null}, ${record.createdAt})
+  `;
 }
 
 export async function deleteRegistration(id: string): Promise<boolean> {
-  const result = await query(`DELETE FROM registrations WHERE id = $1`, [id]);
-  return result.rowCount > 0;
+  const result = await sql`DELETE FROM registrations WHERE id = ${id}`;
+  return (result as any).rowCount > 0;
 }
 
 export async function deleteAllRegistrations(): Promise<number> {
-  const result = await query(`DELETE FROM registrations`);
-  return result.rowCount || 0;
+  const result = await sql`DELETE FROM registrations`;
+  return (result as any).rowCount || 0;
 }
 
 export async function getFilteredRegistrations(params: {
@@ -107,10 +90,10 @@ export async function getFilteredRegistrations(params: {
   const whereClause = conditions.length ? 'WHERE ' + conditions.join(' AND ') : '';
   const offset = (page - 1) * limit;
 
-  const countResult = await query(`SELECT COUNT(*) FROM registrations ${whereClause}`, values);
+  const countResult = await sql.unsafe(`SELECT COUNT(*) FROM registrations ${whereClause}`, values);
   const total = parseInt(countResult[0].count, 10);
 
-  const dataResult = await query(
+  const dataResult = await sql.unsafe(
     `SELECT * FROM registrations ${whereClause} ORDER BY created_at DESC LIMIT $${paramIndex} OFFSET $${paramIndex + 1}`,
     [...values, limit, offset]
   );
@@ -122,20 +105,20 @@ export async function getFilteredRegistrations(params: {
 }
 
 export async function getStats() {
-  const totalResult = await query(`SELECT COUNT(*) FROM registrations`);
+  const totalResult = await sql`SELECT COUNT(*) FROM registrations`;
   const totalRegistrations = parseInt(totalResult[0].count, 10);
 
   const now = new Date();
   const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate()).toISOString();
   const last24h = new Date(now.getTime() - 86400000).toISOString();
 
-  const todayResult = await query(`SELECT COUNT(*) FROM registrations WHERE created_at >= $1`, [startOfToday]);
+  const todayResult = await sql`SELECT COUNT(*) FROM registrations WHERE created_at >= ${startOfToday}`;
   const todayRegistrations = parseInt(todayResult[0].count, 10);
 
-  const recentResult = await query(`SELECT COUNT(*) FROM registrations WHERE created_at >= $1`, [last24h]);
+  const recentResult = await sql`SELECT COUNT(*) FROM registrations WHERE created_at >= ${last24h}`;
   const recentRegistrations = parseInt(recentResult[0].count, 10);
 
-  const expResult = await query(`SELECT experience, COUNT(*) as count FROM registrations GROUP BY experience`);
+  const expResult = await sql`SELECT experience, COUNT(*) as count FROM registrations GROUP BY experience`;
   const breakdown: Record<string, number> = { Beginner: 0, Intermediate: 0, Advanced: 0 };
   for (const row of expResult) {
     breakdown[row.experience] = parseInt(row.count, 10);

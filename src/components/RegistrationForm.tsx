@@ -142,10 +142,11 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({ onSuccess })
     } catch (err: any) {
       console.error('Registration error:', err);
       setIsSubmitting(false);
-      if (err?.message?.includes('duplicate key') || err?.message?.includes('already registered')) {
+      const msg = err?.message || '';
+      if (msg.includes('duplicate key') || msg.includes('already registered')) {
         setServerError('This email is already registered.');
       } else {
-        setServerError('Failed to register. Please check your connection and try again.');
+        setServerError(msg || 'Failed to register. Please check your connection and try again.');
       }
     }
   };
