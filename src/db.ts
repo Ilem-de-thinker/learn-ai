@@ -39,29 +39,34 @@ export async function initDatabase() {
 
 export async function getAllRegistrations(): Promise<RegistrationRecord[]> {
   const rows = await sql`SELECT * FROM registrations ORDER BY created_at DESC`;
-  return rows.map(rowToRecord);
+  return (rows && Array.isArray(rows) ? rows : []).map(rowToRecord);
 }
 
 export async function getRegistrationByEmail(email: string): Promise<RegistrationRecord | null> {
   const rows = await sql`SELECT * FROM registrations WHERE email = ${email.toLowerCase()}`;
-  return rows.length ? rowToRecord(rows[0]) : null;
+  return (rows && Array.isArray(rows) && rows.length) ? rowToRecord(rows[0]) : null;
 }
 
 export async function insertRegistration(record: RegistrationRecord): Promise<void> {
-  await sql`
-    INSERT INTO registrations (id, full_name, email, phone, country, state, occupation, experience, source, referral_code, created_at)
-    VALUES (${record.id}, ${record.fullName}, ${record.email}, ${record.phone}, ${record.country}, ${record.state}, ${record.occupation}, ${record.experience}, ${record.source}, ${record.referralCode || null}, ${record.createdAt})
-  `;
+  try {
+    await sql`
+      INSERT INTO registrations (id, full_name, email, phone, country, state, occupation, experience, source, referral_code, created_at)
+      VALUES (${record.id}, ${record.fullName}, ${record.email}, ${record.phone}, ${record.country}, ${record.state}, ${record.occupation}, ${record.experience}, ${record.source}, ${record.referralCode || null}, ${record.createdAt})
+    `;
+  } catch (err: any) {
+    console.error('insertRegistration error:', err);
+    throw err;
+  }
 }
 
 export async function deleteRegistration(id: string): Promise<boolean> {
   const result = await sql`DELETE FROM registrations WHERE id = ${id}`;
-  return (result as any).rowCount > 0;
+  return (result as any)?.rowCount > 0;
 }
 
 export async function deleteAllRegistrations(): Promise<number> {
   const result = await sql`DELETE FROM registrations`;
-  return (result as any).rowCount || 0;
+  return (result as any)?.rowCount || 0;
 }
 
 export async function getFilteredRegistrations(params: {
@@ -91,7 +96,8 @@ export async function getFilteredRegistrations(params: {
   const offset = (page - 1) * limit;
 
   const countResult = await sql.unsafe(`SELECT COUNT(*) FROM registrations ${whereClause}`, values);
-  const total = parseInt(countResult[0].count, 10);
+  console.log('getFilteredRegistrations countResult:', countResult);
+  const total = countResult?.[0] ? parseInt((countResult[0] as any).count ?? (countResult[0] as any).COUNT ?? 0, 10) : 0;
 
   const dataResult = await sql.unsafe(
     `SELECT * FROM registrations ${whereClause} ORDER BY created_at DESC LIMIT $${paramIndex} OFFSET $${paramIndex + 1}`,
@@ -99,29 +105,31 @@ export async function getFilteredRegistrations(params: {
   );
 
   return {
-    items: dataResult.map(rowToRecord),
+    items: (dataResult && Array.isArray(dataResult) ? dataResult : []).map(rowToRecord),
     total,
   };
 }
 
 export async function getStats() {
   const totalResult = await sql`SELECT COUNT(*) FROM registrations`;
-  const totalRegistrations = parseInt(totalResult[0].count, 10);
+  const totalRegistrations = totalResult?.[0] ? parseInt((totalResult[0] as any).count ?? totalResult[0].COUNT ?? 0, 10) : 0;
 
   const now = new Date();
   const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate()).toISOString();
   const last24h = new Date(now.getTime() - 86400000).toISOString();
 
   const todayResult = await sql`SELECT COUNT(*) FROM registrations WHERE created_at >= ${startOfToday}`;
-  const todayRegistrations = parseInt(todayResult[0].count, 10);
+  const todayRegistrations = todayResult?.[0] ? parseInt((todayResult[0] as any).count ?? todayResult[0].COUNT ?? 0, 10) : 0;
 
   const recentResult = await sql`SELECT COUNT(*) FROM registrations WHERE created_at >= ${last24h}`;
-  const recentRegistrations = parseInt(recentResult[0].count, 10);
+  const recentRegistrations = recentResult?.[0] ? parseInt((recentResult[0] as any).count ?? recentResult[0].COUNT ?? 0, 10) : 0;
 
   const expResult = await sql`SELECT experience, COUNT(*) as count FROM registrations GROUP BY experience`;
   const breakdown: Record<string, number> = { Beginner: 0, Intermediate: 0, Advanced: 0 };
-  for (const row of expResult) {
-    breakdown[row.experience] = parseInt(row.count, 10);
+  if (expResult && Array.isArray(expResult)) {
+    for (const row of expResult) {
+      breakdown[row.experience] = parseInt((row as any).count ?? 0, 10);
+    }
   }
 
   return {
