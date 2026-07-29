@@ -1,0 +1,6 @@
+{
+  "name": "Course Registration Portal",
+  "description": "A premium online course registration platform with student landing page, registration form, and password-protected admin dashboard.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
