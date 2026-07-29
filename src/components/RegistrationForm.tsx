@@ -121,7 +121,7 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({ onSuccess })
 
     setIsSubmitting(true);
 
-    const registration: Registration = {
+    const registration: Registration & { agreeToTerms: boolean } = {
       id: 'reg_' + Date.now().toString(36) + Math.random().toString(36).substr(2, 5),
       fullName: formData.fullName,
       email: formData.email,
@@ -133,6 +133,7 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({ onSuccess })
       source: formData.source,
       referralCode: formData.referralCode || undefined,
       createdAt: new Date().toISOString(),
+      agreeToTerms: true,
     };
 
     try {
