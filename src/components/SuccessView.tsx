@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Registration } from '../types';
-import { CheckCircle2, Home, Calendar, Mail, User, MapPin, ArrowRight, Sparkles } from 'lucide-react';
+import { CheckCircle2, Home, Calendar, Mail, User, MapPin, ArrowRight, Sparkles, MessageCircle } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { motion } from 'motion/react';
 
@@ -88,6 +88,27 @@ export const SuccessView: React.FC<SuccessViewProps> = ({ registration }) => {
             </div>
           </div>
         )}
+
+        {/* WhatsApp Group CTA */}
+        <div className="bg-emerald-950/20 border border-emerald-800/30 rounded-2xl p-6 space-y-3">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shrink-0">
+              <MessageCircle className="w-5 h-5" />
+            </div>
+            <div className="text-left">
+              <h3 className="text-sm font-bold text-white">Join Our WhatsApp Group</h3>
+              <p className="text-xs text-zinc-400">Get course updates, materials & connect with peers</p>
+            </div>
+          </div>
+          <a
+            href="https://chat.whatsapp.com/EkXbyJ3vE6h3CnuNkM93Hn"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="block w-full py-3 rounded-xl font-bold text-sm bg-emerald-600 text-white hover:bg-emerald-500 transition-all text-center"
+          >
+            Join WhatsApp Group
+          </a>
+        </div>
 
         {/* Action Button: Return Home */}
         <div className="pt-4 flex flex-col sm:flex-row items-center justify-center gap-4">
