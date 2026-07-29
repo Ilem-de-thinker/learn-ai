@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Registration, RegistrationFormData } from '../types';
+import { insertRegistration } from '../db';
 import { 
   User, 
   Mail, 
@@ -116,34 +117,36 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({ onSuccess })
     e.preventDefault();
     setServerError(null);
 
-    if (!validate()) {
-      return;
-    }
+    if (!validate()) return;
 
     setIsSubmitting(true);
 
+    const registration: Registration = {
+      id: 'reg_' + Date.now().toString(36) + Math.random().toString(36).substr(2, 5),
+      fullName: formData.fullName,
+      email: formData.email,
+      phone: formData.phone,
+      country: formData.country,
+      state: formData.state,
+      occupation: formData.occupation,
+      experience: formData.experience,
+      source: formData.source,
+      referralCode: formData.referralCode || undefined,
+      createdAt: new Date().toISOString(),
+    };
+
     try {
-      const response = await fetch('/api/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        setServerError(data.error || 'Failed to complete registration. Please try again.');
-        setIsSubmitting(false);
-        return;
+      await insertRegistration(registration);
+      setIsSubmitting(false);
+      onSuccess(registration);
+    } catch (err: any) {
+      console.error('Registration error:', err);
+      setIsSubmitting(false);
+      if (err?.message?.includes('duplicate key') || err?.message?.includes('already registered')) {
+        setServerError('This email is already registered.');
+      } else {
+        setServerError('Failed to register. Please check your connection and try again.');
       }
-
-      // Success
-      setIsSubmitting(false);
-      onSuccess(data.registration);
-    } catch (err) {
-      console.error('Registration submit error:', err);
-      setServerError('Network error. Please check your connection and try again.');
-      setIsSubmitting(false);
     }
   };
 

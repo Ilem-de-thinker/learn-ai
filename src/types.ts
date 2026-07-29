@@ -26,25 +26,3 @@ export interface RegistrationFormData {
   referralCode?: string;
   agreeToTerms: boolean;
 }
-
-export interface AdminStats {
-  totalRegistrations: number;
-  todayRegistrations: number;
-  recentRegistrations: number;
-  experienceBreakdown: {
-    beginner: number;
-    intermediate: number;
-    advanced: number;
-  };
-}
-
-export interface PaginatedRegistrations {
-  items: Registration[];
-  total: number;
-  page: number;
-  totalPages: number;
-  limit: number;
-  stats: AdminStats;
-}
-
-export type ViewState = 'home' | 'register' | 'success' | 'admin' | 'terms';

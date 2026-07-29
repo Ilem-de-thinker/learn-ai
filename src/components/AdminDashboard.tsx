@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Registration, AdminStats, PaginatedRegistrations } from '../types';
+import { Registration } from '../types';
+import { getFilteredRegistrations, getStats, deleteRegistration, deleteAllRegistrations, getAllRegistrations, initDatabase } from '../db';
 import { 
   Lock, 
   Eye, 
@@ -24,14 +25,14 @@ import {
 import { motion, AnimatePresence } from 'motion/react';
 
 export const AdminDashboard: React.FC = () => {
-  const [token, setToken] = useState<string>(() => localStorage.getItem('admin_token') || '');
+  const [loggedIn, setLoggedIn] = useState<boolean>(() => localStorage.getItem('admin_logged_in') === 'true');
   const [passwordInput, setPasswordInput] = useState<string>('');
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [loginError, setLoginError] = useState<string | null>(null);
   const [isLoggingIn, setIsLoggingIn] = useState<boolean>(false);
 
   // Dashboard Data State
-  const [registrationsData, setRegistrationsData] = useState<PaginatedRegistrations | null>(null);
+  const [registrationsData, setRegistrationsData] = useState<{ items: Registration[]; total: number; stats?: any } | null>(null);
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [experienceFilter, setExperienceFilter] = useState<string>('');
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -43,51 +44,33 @@ export const AdminDashboard: React.FC = () => {
   const [isDeleting, setIsDeleting] = useState<boolean>(false);
 
   const fetchRegistrations = useCallback(async () => {
-    if (!token) return;
+    if (!loggedIn) return;
     setIsLoading(true);
 
     try {
-      const params = new URLSearchParams({
-        page: currentPage.toString(),
-        limit: '10',
-      });
-      if (searchQuery) params.append('q', searchQuery);
-      if (experienceFilter) params.append('experience', experienceFilter);
-
-      const res = await fetch(`/api/admin/registrations?${params.toString()}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'x-admin-password': token,
-        },
-      });
-
-      if (!res.ok) {
-        if (res.status === 401) {
-          setToken('');
-          localStorage.removeItem('admin_token');
-          setLoginError('Session expired. Please re-enter admin password.');
-        } else {
-          throw new Error('Failed to fetch registrations');
-        }
-        setIsLoading(false);
-        return;
-      }
-
-      const data: PaginatedRegistrations = await res.json();
-      setRegistrationsData(data);
+      const [result, stats] = await Promise.all([
+        getFilteredRegistrations({
+          q: searchQuery || undefined,
+          experience: experienceFilter || undefined,
+          page: currentPage,
+          limit: 10,
+        }),
+        getStats(),
+      ]);
+      setRegistrationsData({ ...result, stats });
     } catch (err) {
       console.error('Fetch error:', err);
-      setActionMessage({ type: 'error', text: 'Failed to load registrations. Server may be starting.' });
+      setActionMessage({ type: 'error', text: 'Failed to load registrations. Check database connection.' });
     } finally {
       setIsLoading(false);
     }
-  }, [token, currentPage, searchQuery, experienceFilter]);
+  }, [loggedIn, currentPage, searchQuery, experienceFilter]);
 
   useEffect(() => {
-    if (token) {
+    if (loggedIn) {
       fetchRegistrations();
     }
-  }, [token, fetchRegistrations]);
+  }, [loggedIn, fetchRegistrations]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -95,35 +78,25 @@ export const AdminDashboard: React.FC = () => {
     setIsLoggingIn(true);
 
     try {
-      const res = await fetch('/api/admin/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ password: passwordInput }),
-      });
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        setLoginError(data.error || 'Invalid admin password');
-        setIsLoggingIn(false);
-        return;
+      const adminPassword = import.meta.env.VITE_ADMIN_PASSWORD;
+      if (passwordInput === adminPassword) {
+        setLoggedIn(true);
+        localStorage.setItem('admin_logged_in', 'true');
+        setPasswordInput('');
+        await initDatabase();
+      } else {
+        setLoginError('Invalid admin password');
       }
-
-      const validToken = data.token;
-      setToken(validToken);
-      localStorage.setItem('admin_token', validToken);
-      setPasswordInput('');
     } catch (err) {
-      console.error('Login error:', err);
-      setLoginError('Network error logging in. Please retry.');
+      setLoginError('Error connecting to database. Check your connection.');
     } finally {
       setIsLoggingIn(false);
     }
   };
 
   const handleLogout = () => {
-    setToken('');
-    localStorage.removeItem('admin_token');
+    setLoggedIn(false);
+    localStorage.removeItem('admin_logged_in');
     setRegistrationsData(null);
   };
 
@@ -132,18 +105,7 @@ export const AdminDashboard: React.FC = () => {
     setIsDeleting(true);
 
     try {
-      const res = await fetch(`/api/admin/registrations/${deleteTarget.id}`, {
-        method: 'DELETE',
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'x-admin-password': token,
-        },
-      });
-
-      if (!res.ok) {
-        throw new Error('Failed to delete registration');
-      }
-
+      await deleteRegistration(deleteTarget.id);
       setActionMessage({ type: 'success', text: `Deleted registration for ${deleteTarget.fullName}` });
       setDeleteTarget(null);
       fetchRegistrations();
@@ -157,16 +119,13 @@ export const AdminDashboard: React.FC = () => {
 
   const handleExportCSV = async () => {
     try {
-      const res = await fetch('/api/admin/export', {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'x-admin-password': token,
-        },
-      });
-
-      if (!res.ok) throw new Error('Export failed');
-
-      const blob = await res.blob();
+      const all = await getAllRegistrations();
+      const header = 'ID,Full Name,Email,Phone,Country,State,Occupation,Experience,Source,Referral Code,Created At';
+      const rows = all.map(r =>
+        `"${r.id}","${r.fullName}","${r.email}","${r.phone}","${r.country}","${r.state}","${r.occupation}","${r.experience}","${r.source}","${r.referralCode || ''}","${r.createdAt}"`
+      );
+      const csv = [header, ...rows].join('\n');
+      const blob = new Blob([csv], { type: 'text/csv' });
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
@@ -175,7 +134,6 @@ export const AdminDashboard: React.FC = () => {
       a.click();
       a.remove();
       window.URL.revokeObjectURL(url);
-
       setActionMessage({ type: 'success', text: 'Exported registrations as CSV!' });
     } catch (err) {
       console.error('Export error:', err);
@@ -192,7 +150,7 @@ export const AdminDashboard: React.FC = () => {
   }, [actionMessage]);
 
   // LOGIN VIEW IF NOT AUTHENTICATED
-  if (!token) {
+  if (!loggedIn) {
     return (
       <div className="py-20 px-4 max-w-md mx-auto">
         <motion.div
@@ -258,6 +216,7 @@ export const AdminDashboard: React.FC = () => {
   // AUTHENTICATED ADMIN DASHBOARD
   const stats = registrationsData?.stats;
   const items = registrationsData?.items || [];
+  const totalPages = registrationsData?.total ? Math.ceil(registrationsData.total / 10) : 0;
 
   return (
     <div className="py-10 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto space-y-8">
@@ -519,10 +478,10 @@ export const AdminDashboard: React.FC = () => {
         </div>
 
         {/* PAGINATION FOOTER */}
-        {registrationsData && registrationsData.totalPages > 1 && (
+        {registrationsData && totalPages > 1 && (
           <div className="p-4 border-t border-zinc-800 flex items-center justify-between text-xs text-zinc-400 bg-zinc-900/50">
             <span>
-              Showing Page <strong>{registrationsData.page}</strong> of <strong>{registrationsData.totalPages}</strong> ({registrationsData.total} total items)
+              Showing Page <strong>{currentPage}</strong> of <strong>{totalPages}</strong> ({registrationsData.total} total items)
             </span>
 
             <div className="flex items-center gap-2">
@@ -534,7 +493,7 @@ export const AdminDashboard: React.FC = () => {
                 <ChevronLeft className="w-4 h-4" />
               </button>
               <button
-                disabled={currentPage >= registrationsData.totalPages}
+                disabled={currentPage >= totalPages}
                 onClick={() => setCurrentPage((p) => p + 1)}
                 className="px-3 py-1.5 rounded-lg bg-zinc-900 border border-zinc-800 disabled:opacity-40 hover:text-white"
               >
