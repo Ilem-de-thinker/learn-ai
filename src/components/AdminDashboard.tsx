@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Registration } from '../types';
-import { getFilteredRegistrations, getStats, deleteRegistration, deleteAllRegistrations, getAllRegistrations, initDatabase } from '../db';
+import { getFilteredRegistrations, getStats, deleteRegistration, initDatabase } from '../db';
 import { 
   Lock, 
   Eye, 
@@ -78,16 +78,21 @@ export const AdminDashboard: React.FC = () => {
     setIsLoggingIn(true);
 
     try {
-      if (passwordInput === '@Ilemilem') {
-        setLoggedIn(true);
-        localStorage.setItem('admin_logged_in', 'true');
-        setPasswordInput('');
-        await initDatabase();
-      } else {
-        setLoginError('Invalid admin password');
-      }
-    } catch (err) {
-      setLoginError('Error connecting to database. Check your connection.');
+      const res = await fetch('/api/admin/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password: passwordInput }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Login failed');
+
+      localStorage.setItem('admin_token', data.token);
+      localStorage.setItem('admin_logged_in', 'true');
+      setLoggedIn(true);
+      setPasswordInput('');
+      await initDatabase();
+    } catch (err: any) {
+      setLoginError(err.message || 'Error connecting to database.');
     } finally {
       setIsLoggingIn(false);
     }
@@ -96,6 +101,7 @@ export const AdminDashboard: React.FC = () => {
   const handleLogout = () => {
     setLoggedIn(false);
     localStorage.removeItem('admin_logged_in');
+    localStorage.removeItem('admin_token');
     setRegistrationsData(null);
   };
 
@@ -118,12 +124,9 @@ export const AdminDashboard: React.FC = () => {
 
   const handleExportCSV = async () => {
     try {
-      const all = await getAllRegistrations();
-      const header = 'ID,Full Name,Email,Phone,Country,State,Occupation,Experience,Source,Referral Code,Created At';
-      const rows = all.map(r =>
-        `"${r.id}","${r.fullName}","${r.email}","${r.phone}","${r.country}","${r.state}","${r.occupation}","${r.experience}","${r.source}","${r.referralCode || ''}","${r.createdAt}"`
-      );
-      const csv = [header, ...rows].join('\n');
+      const csv = await (await fetch('/api/admin/export', {
+        headers: { 'x-admin-password': localStorage.getItem('admin_token') || '' },
+      })).text();
       const blob = new Blob([csv], { type: 'text/csv' });
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
