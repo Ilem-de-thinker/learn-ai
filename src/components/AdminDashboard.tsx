@@ -78,8 +78,7 @@ export const AdminDashboard: React.FC = () => {
     setIsLoggingIn(true);
 
     try {
-      const adminPassword = import.meta.env.VITE_ADMIN_PASSWORD;
-      if (passwordInput === adminPassword) {
+      if (passwordInput === '@Ilemilem') {
         setLoggedIn(true);
         localStorage.setItem('admin_logged_in', 'true');
         setPasswordInput('');

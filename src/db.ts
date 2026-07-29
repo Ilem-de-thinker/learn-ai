@@ -1,4 +1,4 @@
-const RAW_URL = import.meta.env.VITE_DATABASE_URL;
+const RAW_URL = 'postgresql://neondb_owner:npg_D9fTCOhBsa5H@ep-super-queen-ax0uh0jj-pooler.c-4.us-east-2.aws.neon.tech/neondb?sslmode=require&channel_binding=require';
 const CONN_STRING = RAW_URL.split('?')[0];
 const NEON_HOST = new URL(RAW_URL).hostname.replace('-pooler', '');
 const SQL_ENDPOINT = `https://${NEON_HOST}/sql`;
