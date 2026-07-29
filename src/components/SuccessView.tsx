@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Registration } from '../types';
-import { CheckCircle2, Home, Calendar, Mail, User, MapPin, ArrowRight, Sparkles, MessageCircle } from 'lucide-react';
+import { CheckCircle2, Home, Calendar, Mail, User, ArrowRight, Sparkles, MessageCircle } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { motion } from 'motion/react';
 
@@ -74,11 +74,6 @@ export const SuccessView: React.FC<SuccessViewProps> = ({ registration }) => {
               <div className="flex items-center gap-2.5 text-zinc-300">
                 <Mail className="w-4 h-4 text-[#C9A227] shrink-0" />
                 <span className="truncate">{registration.email}</span>
-              </div>
-
-              <div className="flex items-center gap-2.5 text-zinc-300">
-                <MapPin className="w-4 h-4 text-[#C9A227] shrink-0" />
-                <span className="truncate">{registration.country}, {registration.state}</span>
               </div>
 
               <div className="flex items-center gap-2.5 text-zinc-300">

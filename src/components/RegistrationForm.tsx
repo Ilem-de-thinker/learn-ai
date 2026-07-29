@@ -6,8 +6,6 @@ import {
   User, 
   Mail, 
   Phone, 
-  Globe, 
-  MapPin, 
   Briefcase, 
   GraduationCap, 
   Share2, 
@@ -26,24 +24,6 @@ import { motion } from 'motion/react';
 interface RegistrationFormProps {
   onSuccess: (registration: Registration) => void;
 }
-
-const COUNTRIES = [
-  'United States',
-  'Canada',
-  'United Kingdom',
-  'Australia',
-  'Germany',
-  'India',
-  'Nigeria',
-  'Brazil',
-  'France',
-  'Japan',
-  'Singapore',
-  'South Africa',
-  'Spain',
-  'Netherlands',
-  'Other',
-];
 
 const OCCUPATIONS = [
   'Student / Academic',
@@ -72,8 +52,6 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({ onSuccess })
     fullName: '',
     email: '',
     phone: '',
-    country: 'United States',
-    state: '',
     occupation: 'Software Engineer / Developer',
     experience: 'Intermediate',
     source: 'Social Media (Twitter/X, LinkedIn, IG)',
@@ -101,10 +79,6 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({ onSuccess })
       newErrors.phone = 'Please enter a valid phone number.';
     }
 
-    if (!formData.state.trim()) {
-      newErrors.state = 'State / Province is required.';
-    }
-
     if (!formData.agreeToTerms) {
       newErrors.agreeToTerms = 'You must agree to the Terms and Conditions to register.';
     }
@@ -126,8 +100,6 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({ onSuccess })
       fullName: formData.fullName,
       email: formData.email,
       phone: formData.phone,
-      country: formData.country,
-      state: formData.state,
       occupation: formData.occupation,
       experience: formData.experience,
       source: formData.source,
@@ -255,48 +227,6 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({ onSuccess })
                 }`}
               />
               {errors.phone && <p className="text-xs text-rose-400">{errors.phone}</p>}
-            </div>
-
-          </div>
-
-          {/* Country & State Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-            
-            {/* Country */}
-            <div className="space-y-2">
-              <label className="text-xs font-bold uppercase tracking-wider text-zinc-300 flex items-center gap-2">
-                <Globe className="w-3.5 h-3.5 text-[#C9A227]" />
-                Country <span className="text-[#C9A227]">*</span>
-              </label>
-              <select
-                value={formData.country}
-                onChange={(e) => handleChange('country', e.target.value)}
-                className="w-full px-4 py-3.5 rounded-xl bg-zinc-900 border border-zinc-800 text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#C9A227] transition-all"
-              >
-                {COUNTRIES.map((c) => (
-                  <option key={c} value={c} className="bg-zinc-900 text-white">
-                    {c}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            {/* State */}
-            <div className="space-y-2">
-              <label className="text-xs font-bold uppercase tracking-wider text-zinc-300 flex items-center gap-2">
-                <MapPin className="w-3.5 h-3.5 text-[#C9A227]" />
-                State / Province <span className="text-[#C9A227]">*</span>
-              </label>
-              <input
-                type="text"
-                value={formData.state}
-                onChange={(e) => handleChange('state', e.target.value)}
-                placeholder="e.g. California / Ontario"
-                className={`w-full px-4 py-3.5 rounded-xl bg-zinc-900 border text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#C9A227] transition-all ${
-                  errors.state ? 'border-rose-500' : 'border-zinc-800'
-                }`}
-              />
-              {errors.state && <p className="text-xs text-rose-400">{errors.state}</p>}
             </div>
 
           </div>

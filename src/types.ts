@@ -5,8 +5,6 @@ export interface Registration {
   fullName: string;
   email: string;
   phone: string;
-  country: string;
-  state: string;
   occupation: string;
   experience: ExperienceLevel;
   source: string;
@@ -18,8 +16,6 @@ export interface RegistrationFormData {
   fullName: string;
   email: string;
   phone: string;
-  country: string;
-  state: string;
   occupation: string;
   experience: ExperienceLevel;
   source: string;

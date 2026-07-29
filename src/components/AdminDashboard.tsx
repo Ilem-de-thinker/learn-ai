@@ -386,7 +386,6 @@ export const AdminDashboard: React.FC = () => {
               <tr>
                 <th className="p-4 font-bold">Candidate</th>
                 <th className="p-4 font-bold">Contact</th>
-                <th className="p-4 font-bold">Location</th>
                 <th className="p-4 font-bold">Occupation & Level</th>
                 <th className="p-4 font-bold">Source / Referral</th>
                 <th className="p-4 font-bold">Registered At</th>
@@ -396,7 +395,7 @@ export const AdminDashboard: React.FC = () => {
             <tbody className="divide-y divide-zinc-800/60">
               {items.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="p-12 text-center text-zinc-500 space-y-2">
+                  <td colSpan={6} className="p-12 text-center text-zinc-500 space-y-2">
                     <Users className="w-8 h-8 mx-auto text-zinc-600 mb-2" />
                     <p className="text-sm font-semibold text-zinc-400">No registrations found</p>
                     <p className="text-xs">Try clearing search filters or add sample entries.</p>
@@ -416,12 +415,6 @@ export const AdminDashboard: React.FC = () => {
                     <td className="p-4 space-y-0.5">
                       <div className="text-zinc-200">{r.email}</div>
                       <div className="text-zinc-400 text-[11px]">{r.phone}</div>
-                    </td>
-
-                    {/* Location */}
-                    <td className="p-4">
-                      <div className="text-zinc-200 font-medium">{r.country}</div>
-                      <div className="text-zinc-400 text-[11px]">{r.state}</div>
                     </td>
 
                     {/* Occupation & Level */}

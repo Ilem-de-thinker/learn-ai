@@ -9,7 +9,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   try {
     const names = ['Emma Watson','David Miller','Yuki Tanaka','Lucas Silva','Elena Rostova','Kofi Mensah','Hannah Schmidt'];
-    const countries = ['Germany','Japan','Brazil','South Africa','France','Australia','United States'];
     const occupations = ['Product Manager','Data Analyst','Frontend Developer','UI Designer','Student','Tech Consultant'];
     const experiences: ('Beginner'|'Intermediate'|'Advanced')[] = ['Beginner','Intermediate','Advanced'];
     const sources = ['Social Media','Google Search','YouTube','Friend / Referral','Newsletter'];
@@ -20,8 +19,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         fullName: names[i],
         email: names[i].toLowerCase().replace(' ','.') + (Math.floor(Math.random()*899)+100) + '@example.com',
         phone: `+1 (555) 01${i} ${100 + i * 11}`,
-        country: countries[i % countries.length],
-        state: 'Main Region',
+
         occupation: occupations[i % occupations.length],
         experience: experiences[i % experiences.length],
         source: sources[i % sources.length],

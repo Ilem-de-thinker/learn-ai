@@ -5,8 +5,6 @@ export interface RegistrationRecord {
   fullName: string;
   email: string;
   phone: string;
-  country: string;
-  state: string;
   occupation: string;
   experience: 'Beginner' | 'Intermediate' | 'Advanced';
   source: string;
@@ -22,7 +20,7 @@ function getSql() {
 
 export async function initDatabase() {
   const sql = getSql();
-  await sql`CREATE TABLE IF NOT EXISTS registrations (id VARCHAR(50) PRIMARY KEY, full_name VARCHAR(255) NOT NULL, email VARCHAR(255) NOT NULL, phone VARCHAR(50) NOT NULL, country VARCHAR(100) NOT NULL, state VARCHAR(100) NOT NULL, occupation VARCHAR(255) NOT NULL, experience VARCHAR(20) NOT NULL CHECK (experience IN ('Beginner', 'Intermediate', 'Advanced')), source VARCHAR(100) NOT NULL, referral_code VARCHAR(100), created_at TIMESTAMPTZ NOT NULL DEFAULT NOW())`;
+  await sql`CREATE TABLE IF NOT EXISTS registrations (id VARCHAR(50) PRIMARY KEY, full_name VARCHAR(255) NOT NULL, email VARCHAR(255) NOT NULL, phone VARCHAR(50) NOT NULL, occupation VARCHAR(255) NOT NULL, experience VARCHAR(20) NOT NULL CHECK (experience IN ('Beginner', 'Intermediate', 'Advanced')), source VARCHAR(100) NOT NULL, referral_code VARCHAR(100), created_at TIMESTAMPTZ NOT NULL DEFAULT NOW())`;
   try { await sql`CREATE UNIQUE INDEX IF NOT EXISTS idx_registrations_email ON registrations (email)`; } catch {}
 }
 
@@ -37,7 +35,7 @@ export async function getRegistrationByEmail(email: string): Promise<Registratio
 }
 
 export async function insertRegistration(record: RegistrationRecord): Promise<void> {
-  await getSql()`INSERT INTO registrations (id, full_name, email, phone, country, state, occupation, experience, source, referral_code, created_at) VALUES (${record.id}, ${record.fullName}, ${record.email}, ${record.phone}, ${record.country}, ${record.state}, ${record.occupation}, ${record.experience}, ${record.source}, ${record.referralCode || null}, ${record.createdAt})`;
+  await getSql()`INSERT INTO registrations (id, full_name, email, phone, occupation, experience, source, referral_code, created_at) VALUES (${record.id}, ${record.fullName}, ${record.email}, ${record.phone}, ${record.occupation}, ${record.experience}, ${record.source}, ${record.referralCode || null}, ${record.createdAt})`;
 }
 
 export async function deleteRegistration(id: string): Promise<boolean> {
@@ -56,7 +54,7 @@ export async function getFilteredRegistrations(params: { q?: string; experience?
   const values: any[] = [];
   let idx = 1;
   if (q) {
-    conditions.push(`(full_name ILIKE $${idx} OR email ILIKE $${idx} OR phone ILIKE $${idx} OR country ILIKE $${idx} OR state ILIKE $${idx} OR occupation ILIKE $${idx})`);
+    conditions.push(`(full_name ILIKE $${idx} OR email ILIKE $${idx} OR phone ILIKE $${idx} OR occupation ILIKE $${idx})`);
     values.push(`%${q}%`);
     idx++;
   }
@@ -99,8 +97,6 @@ function rowToRecord(row: any): RegistrationRecord {
     fullName: row.full_name,
     email: row.email,
     phone: row.phone,
-    country: row.country,
-    state: row.state,
     occupation: row.occupation,
     experience: row.experience,
     source: row.source,
