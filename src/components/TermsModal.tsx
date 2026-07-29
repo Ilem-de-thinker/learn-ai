@@ -1,18 +1,15 @@
 import React from 'react';
-import { ViewState } from '../types';
+import { useNavigate } from 'react-router-dom';
 import { Shield, ArrowLeft, CheckCircle2 } from 'lucide-react';
 import { motion } from 'motion/react';
 
-interface TermsModalProps {
-  setView: (view: ViewState) => void;
-}
-
-export const TermsModal: React.FC<TermsModalProps> = ({ setView }) => {
+export const TermsModal: React.FC = () => {
+  const navigate = useNavigate();
   return (
     <div className="py-12 px-4 sm:px-6 lg:px-8 max-w-3xl mx-auto space-y-8">
       <button
         onClick={() => {
-          setView('register');
+          navigate('/register');
           window.scrollTo({ top: 0, behavior: 'smooth' });
         }}
         className="inline-flex items-center gap-2 text-xs font-semibold text-[#C9A227] hover:underline"
@@ -69,7 +66,7 @@ export const TermsModal: React.FC<TermsModalProps> = ({ setView }) => {
         <div className="pt-4 border-t border-zinc-800 flex justify-end">
           <button
             onClick={() => {
-              setView('register');
+              navigate('/register');
               window.scrollTo({ top: 0, behavior: 'smooth' });
             }}
             className="px-6 py-3 rounded-xl font-bold text-xs bg-[#C9A227] text-black hover:bg-[#d8b132] transition-all"

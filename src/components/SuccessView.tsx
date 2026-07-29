@@ -1,15 +1,16 @@
 import React, { useEffect } from 'react';
-import { Registration, ViewState } from '../types';
+import { useNavigate } from 'react-router-dom';
+import { Registration } from '../types';
 import { CheckCircle2, Home, Calendar, Mail, User, MapPin, ArrowRight, Sparkles } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { motion } from 'motion/react';
 
 interface SuccessViewProps {
   registration: Registration | null;
-  setView: (view: ViewState) => void;
 }
 
-export const SuccessView: React.FC<SuccessViewProps> = ({ registration, setView }) => {
+export const SuccessView: React.FC<SuccessViewProps> = ({ registration }) => {
+  const navigate = useNavigate();
   useEffect(() => {
     // Confetti celebration
     try {
@@ -92,7 +93,7 @@ export const SuccessView: React.FC<SuccessViewProps> = ({ registration, setView 
         <div className="pt-4 flex flex-col sm:flex-row items-center justify-center gap-4">
           <button
             onClick={() => {
-              setView('home');
+              navigate('/');
               window.scrollTo({ top: 0, behavior: 'smooth' });
             }}
             className="w-full sm:w-auto px-8 py-4 rounded-xl font-bold text-base bg-[#C9A227] text-black hover:bg-[#d8b132] transition-all transform active:scale-95 gold-glow flex items-center justify-center gap-2 shadow-lg"

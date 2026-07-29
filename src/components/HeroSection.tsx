@@ -1,22 +1,18 @@
 import React from 'react';
-import { ViewState } from '../types';
+import { useNavigate } from 'react-router-dom';
 import { ArrowRight, Sparkles, Zap, MessageCircle } from 'lucide-react';
 import { motion } from 'motion/react';
 
-interface HeroSectionProps {
-  setView: (view: ViewState) => void;
-}
+export const HeroSection: React.FC = () => {
+  const navigate = useNavigate();
 
-export const HeroSection: React.FC<HeroSectionProps> = ({ setView }) => {
   return (
     <div className="relative overflow-hidden bg-[#111111] pt-12 pb-24 border-b border-zinc-800">
-      {/* Subtle Gold Ambient Background Glow */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[350px] bg-[#C9A227]/10 blur-[120px] rounded-full pointer-events-none" />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="text-center max-w-4xl mx-auto space-y-8">
           
-          {/* Badge */}
           <motion.div 
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
@@ -27,7 +23,6 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ setView }) => {
             <span>Limited Live Cohort • Next Session Starts August 2026</span>
           </motion.div>
 
-          {/* Title */}
           <motion.h1 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -38,7 +33,6 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ setView }) => {
             <span className="gold-gradient-text font-display">with AI</span>
           </motion.h1>
 
-          {/* Subtitle */}
           <motion.p 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -48,7 +42,6 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ setView }) => {
             Register now for the upcoming training. Learn how to design, engineer, and deploy modern production web applications using Next.js and Tailwind CSS.
           </motion.p>
 
-          {/* One Large Gold Button */}
           <motion.div 
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -57,7 +50,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ setView }) => {
           >
             <button
               onClick={() => {
-                setView('register');
+                navigate('/register');
                 window.scrollTo({ top: 0, behavior: 'smooth' });
               }}
               className="w-full sm:w-auto px-10 py-5 rounded-2xl font-bold text-lg bg-[#C9A227] text-black hover:bg-[#dbb431] transition-all transform hover:scale-[1.02] active:scale-95 gold-glow flex items-center justify-center gap-3 shadow-xl"
@@ -76,7 +69,6 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ setView }) => {
             </a>
           </motion.div>
 
-          {/* Live Trust Metrics */}
           <motion.div 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -90,8 +82,6 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ setView }) => {
               </div>
               <p className="text-xs text-zinc-400">Live Intensive</p>
             </div>
-
-
           </motion.div>
 
         </div>

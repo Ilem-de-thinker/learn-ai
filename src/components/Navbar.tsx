@@ -1,32 +1,25 @@
 import React from 'react';
-import { ViewState } from '../types';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Sparkles, UserCheck, Menu, X } from 'lucide-react';
 
-interface NavbarProps {
-  currentView: ViewState;
-  setView: (view: ViewState) => void;
-}
-
-export const Navbar: React.FC<NavbarProps> = ({ currentView, setView }) => {
+export const Navbar: React.FC = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
   const [mobileOpen, setMobileOpen] = React.useState(false);
 
-  const navItems = [
-    { label: 'Home', view: 'home' as ViewState },
-    { label: 'Register', view: 'register' as ViewState },
-  ];
-
-  const handleNav = (v: ViewState) => {
-    setView(v);
+  const handleNav = (path: string) => {
+    navigate(path);
     setMobileOpen(false);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+  const isActive = (path: string) => location.pathname === path;
+
   return (
     <header className="sticky top-0 z-50 bg-[#111111]/90 backdrop-blur-md border-b border-[#222225]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
-        {/* Brand Logo */}
         <button
-          onClick={() => handleNav('home')}
+          onClick={() => handleNav('/')}
           className="flex items-center gap-3 group text-left transition-transform hover:scale-[1.02]"
         >
           <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#C9A227] to-[#8C6D14] flex items-center justify-center text-black font-bold shadow-md shadow-[#C9A227]/20 group-hover:gold-glow transition-all">
@@ -42,23 +35,22 @@ export const Navbar: React.FC<NavbarProps> = ({ currentView, setView }) => {
           </div>
         </button>
 
-        {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center gap-8">
           <button
-            onClick={() => handleNav('home')}
+            onClick={() => handleNav('/')}
             className={`text-sm font-medium transition-colors ${
-              currentView === 'home' ? 'text-[#C9A227] font-semibold' : 'text-gray-300 hover:text-white'
+              isActive('/') ? 'text-[#C9A227] font-semibold' : 'text-gray-300 hover:text-white'
             }`}
           >
             Home
           </button>
-          
+
           <a
             href="#curriculum"
             onClick={(e) => {
-              if (currentView !== 'home') {
+              if (!isActive('/')) {
                 e.preventDefault();
-                setView('home');
+                navigate('/');
                 setTimeout(() => {
                   document.getElementById('curriculum')?.scrollIntoView({ behavior: 'smooth' });
                 }, 100);
@@ -72,9 +64,9 @@ export const Navbar: React.FC<NavbarProps> = ({ currentView, setView }) => {
           <a
             href="#why-join"
             onClick={(e) => {
-              if (currentView !== 'home') {
+              if (!isActive('/')) {
                 e.preventDefault();
-                setView('home');
+                navigate('/');
                 setTimeout(() => {
                   document.getElementById('why-join')?.scrollIntoView({ behavior: 'smooth' });
                 }, 100);
@@ -84,13 +76,11 @@ export const Navbar: React.FC<NavbarProps> = ({ currentView, setView }) => {
           >
             Why Join
           </a>
-
         </nav>
 
-        {/* Action Button */}
         <div className="hidden md:flex items-center gap-4">
           <button
-            onClick={() => handleNav('register')}
+            onClick={() => handleNav('/register')}
             className="px-5 py-2.5 rounded-xl font-semibold text-sm bg-[#C9A227] text-black hover:bg-[#d8b132] transition-all transform active:scale-95 shadow-md shadow-[#C9A227]/20 flex items-center gap-2"
           >
             <UserCheck className="w-4 h-4" />
@@ -98,7 +88,6 @@ export const Navbar: React.FC<NavbarProps> = ({ currentView, setView }) => {
           </button>
         </div>
 
-        {/* Mobile Menu Toggle */}
         <button
           onClick={() => setMobileOpen(!mobileOpen)}
           className="md:hidden p-2 text-gray-300 hover:text-white focus:outline-none"
@@ -107,30 +96,27 @@ export const Navbar: React.FC<NavbarProps> = ({ currentView, setView }) => {
         </button>
       </div>
 
-      {/* Mobile Drawer */}
       {mobileOpen && (
         <div className="md:hidden bg-[#161618] border-b border-zinc-800 px-4 py-6 space-y-4">
           <button
-            onClick={() => handleNav('home')}
+            onClick={() => handleNav('/')}
             className={`block w-full text-left px-3 py-2 rounded-lg text-base font-medium ${
-              currentView === 'home' ? 'text-[#C9A227] bg-[#C9A227]/10' : 'text-gray-200'
+              isActive('/') ? 'text-[#C9A227] bg-[#C9A227]/10' : 'text-gray-200'
             }`}
           >
             Home
           </button>
           <button
-            onClick={() => handleNav('register')}
+            onClick={() => handleNav('/register')}
             className={`block w-full text-left px-3 py-2 rounded-lg text-base font-medium ${
-              currentView === 'register' ? 'text-[#C9A227] bg-[#C9A227]/10' : 'text-gray-200'
+              isActive('/register') ? 'text-[#C9A227] bg-[#C9A227]/10' : 'text-gray-200'
             }`}
           >
             Registration Form
           </button>
           <button
-            onClick={() => handleNav('admin')}
-            className={`block w-full text-left px-3 py-2 rounded-lg text-base font-medium ${
-              currentView === 'admin' ? 'text-[#C9A227] bg-[#C9A227]/10' : 'text-gray-200'
-            }`}
+            onClick={() => handleNav('/register')}
+            className="w-full mt-2 py-3 rounded-xl font-bold bg-[#C9A227] text-black text-center"
           >
             Register Now
           </button>

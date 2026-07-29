@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ViewState } from '../types';
+import { useNavigate } from 'react-router-dom';
 import { 
   Rocket, 
   Code2, 
@@ -15,11 +15,8 @@ import {
 } from 'lucide-react';
 import { motion } from 'motion/react';
 
-interface CourseOverviewProps {
-  setView: (view: ViewState) => void;
-}
-
-export const CourseOverview: React.FC<CourseOverviewProps> = ({ setView }) => {
+export const CourseOverview: React.FC = () => {
+  const navigate = useNavigate();
   const [openFaq, setOpenFaq] = useState<number | null>(0);
 
   const whyJoinItems = [
@@ -263,7 +260,7 @@ export const CourseOverview: React.FC<CourseOverviewProps> = ({ setView }) => {
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
           <button
             onClick={() => {
-              setView('register');
+              navigate('/register');
               window.scrollTo({ top: 0, behavior: 'smooth' });
             }}
             className="px-8 py-4 rounded-xl font-bold text-base bg-[#C9A227] text-black hover:bg-[#d8b132] transition-all transform hover:scale-105 gold-glow shadow-lg inline-flex items-center gap-2"

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Registration, RegistrationFormData, ViewState } from '../types';
+import { useNavigate } from 'react-router-dom';
+import { Registration, RegistrationFormData } from '../types';
 import { 
   User, 
   Mail, 
@@ -23,7 +24,6 @@ import { motion } from 'motion/react';
 
 interface RegistrationFormProps {
   onSuccess: (registration: Registration) => void;
-  setView: (view: ViewState) => void;
 }
 
 const COUNTRIES = [
@@ -65,7 +65,8 @@ const SOURCES = [
   'Other',
 ];
 
-export const RegistrationForm: React.FC<RegistrationFormProps> = ({ onSuccess, setView }) => {
+export const RegistrationForm: React.FC<RegistrationFormProps> = ({ onSuccess }) => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState<RegistrationFormData>({
     fullName: '',
     email: '',
@@ -396,7 +397,7 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({ onSuccess, s
                   type="button"
                   onClick={(e) => {
                     e.stopPropagation();
-                    setView('terms');
+                    navigate('/terms');
                   }}
                   className="text-[#C9A227] hover:underline font-semibold"
                 >
