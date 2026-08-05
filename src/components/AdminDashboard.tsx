@@ -387,7 +387,7 @@ export const AdminDashboard: React.FC = () => {
                 <th className="p-4 font-bold">Candidate</th>
                 <th className="p-4 font-bold">Contact</th>
                 <th className="p-4 font-bold">Occupation & Level</th>
-                <th className="p-4 font-bold">Source / Referral</th>
+                <th className="p-4 font-bold">Source</th>
                 <th className="p-4 font-bold">Registered At</th>
                 <th className="p-4 font-bold text-right">Actions</th>
               </tr>
@@ -433,14 +433,9 @@ export const AdminDashboard: React.FC = () => {
                       </span>
                     </td>
 
-                    {/* Source / Referral */}
-                    <td className="p-4 space-y-0.5">
+                    {/* Source */}
+                    <td className="p-4">
                       <div className="text-zinc-300">{r.source}</div>
-                      {r.referralCode ? (
-                        <div className="text-[10px] text-[#C9A227] font-semibold">Ref: {r.referralCode}</div>
-                      ) : (
-                        <div className="text-[10px] text-zinc-600">No code</div>
-                      )}
                     </td>
 
                     {/* Registered At */}

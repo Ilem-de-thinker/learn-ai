@@ -8,7 +8,6 @@ export interface Registration {
   occupation: string;
   experience: ExperienceLevel;
   source: string;
-  referralCode?: string;
   createdAt: string;
 }
 
@@ -19,6 +18,5 @@ export interface RegistrationFormData {
   occupation: string;
   experience: ExperienceLevel;
   source: string;
-  referralCode?: string;
   agreeToTerms: boolean;
 }

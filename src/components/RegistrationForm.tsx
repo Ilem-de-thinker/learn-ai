@@ -9,7 +9,6 @@ import {
   Briefcase, 
   GraduationCap, 
   Share2, 
-  Tag, 
   CheckSquare, 
   Square, 
   ArrowRight, 
@@ -55,7 +54,6 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({ onSuccess })
     occupation: 'Software Engineer / Developer',
     experience: 'Intermediate',
     source: 'Social Media (Twitter/X, LinkedIn, IG)',
-    referralCode: '',
     agreeToTerms: false,
   });
 
@@ -103,7 +101,6 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({ onSuccess })
       occupation: formData.occupation,
       experience: formData.experience,
       source: formData.source,
-      referralCode: formData.referralCode || undefined,
       createdAt: new Date().toISOString(),
       agreeToTerms: true,
     };
@@ -295,21 +292,6 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({ onSuccess })
                 </option>
               ))}
             </select>
-          </div>
-
-          {/* Referral Code */}
-          <div className="space-y-2">
-            <label className="text-xs font-bold uppercase tracking-wider text-zinc-300 flex items-center gap-2">
-              <Tag className="w-3.5 h-3.5 text-[#C9A227]" />
-              Referral Code <span className="text-zinc-500 font-normal">(Optional)</span>
-            </label>
-            <input
-              type="text"
-              value={formData.referralCode}
-              onChange={(e) => handleChange('referralCode', e.target.value)}
-              placeholder="e.g. VIP_GUEST_2026"
-              className="w-full px-4 py-3.5 rounded-xl bg-zinc-900 border border-zinc-800 text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#C9A227] transition-all"
-            />
           </div>
 
           {/* Agree to Terms Checkbox */}

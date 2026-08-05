@@ -23,7 +23,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         occupation: occupations[i % occupations.length],
         experience: experiences[i % experiences.length],
         source: sources[i % sources.length],
-        referralCode: i % 2 === 0 ? 'GOLD_PASS' : undefined,
         createdAt: new Date(Date.now() - Math.floor(Math.random() * 86400000 * 3)).toISOString(),
       };
       try { await insertRegistration(entry); inserted++; } catch {}

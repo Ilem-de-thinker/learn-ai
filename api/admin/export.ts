@@ -8,11 +8,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   try {
     const all = await getAllRegistrations();
-    const headers = ['Registration ID','Full Name','Email','Phone','Occupation','Experience Level','How Heard','Referral Code','Registered At'];
+    const headers = ['Registration ID','Full Name','Email','Phone','Occupation','Experience Level','How Heard','Registered At'];
     const rows = all.map(r => [
       `"${r.id}"`, `"${r.fullName.replace(/"/g,'""')}"`, `"${r.email.replace(/"/g,'""')}"`,
       `"${r.phone.replace(/"/g,'""')}"`, `"${r.occupation.replace(/"/g,'""')}"`, `"${r.experience}"`, `"${r.source.replace(/"/g,'""')}"`,
-      `"${(r.referralCode||'').replace(/"/g,'""')}"`, `"${new Date(r.createdAt).toLocaleString()}"`,
+      `"${new Date(r.createdAt).toLocaleString()}"`,
     ]);
     const csv = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
     res.setHeader('Content-Type', 'text/csv');
