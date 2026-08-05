@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Sparkles, Github, Twitter, Linkedin, Lock } from 'lucide-react';
+import { Sparkles, Github, Twitter, Linkedin } from 'lucide-react';
 
 export const Footer: React.FC = () => {
   const navigate = useNavigate();
@@ -43,19 +43,8 @@ export const Footer: React.FC = () => {
               </button>
             </li>
             <li>
-              <button onClick={() => { navigate('/register'); window.scrollTo(0,0); }} className="hover:text-white transition-colors">
-                Course Registration
-              </button>
-            </li>
-            <li>
-              <button onClick={() => { navigate('/admin'); window.scrollTo(0,0); }} className="flex items-center gap-1.5 hover:text-white transition-colors">
-                <Lock className="w-3 h-3 text-[#C9A227]" />
-                Admin Dashboard
-              </button>
-            </li>
-            <li>
-              <button onClick={() => { navigate('/terms'); window.scrollTo(0,0); }} className="hover:text-white transition-colors">
-                Terms & Conditions
+              <button onClick={() => { navigate('/join'); window.scrollTo(0,0); }} className="hover:text-white transition-colors">
+                Join Us
               </button>
             </li>
           </ul>
@@ -74,7 +63,7 @@ export const Footer: React.FC = () => {
             </div>
             <div className="flex justify-between text-zinc-300">
               <span>Status:</span>
-              <span className="text-emerald-400 font-semibold">Registration Open</span>
+              <span className="text-emerald-400 font-semibold">Community Open</span>
             </div>
           </div>
         </div>
@@ -84,8 +73,6 @@ export const Footer: React.FC = () => {
       <div className="max-w-7xl mx-auto mt-12 pt-8 border-t border-zinc-800/60 flex flex-col sm:flex-row items-center justify-between text-xs text-zinc-500 gap-4">
         <p>© {new Date().getFullYear()} AI Builders Academy. All rights reserved.</p>
         <div className="flex items-center gap-6">
-          <button onClick={() => navigate('/terms')} className="hover:text-zinc-300">Privacy Policy</button>
-          <button onClick={() => navigate('/terms')} className="hover:text-zinc-300">Terms of Service</button>
           <span className="text-zinc-600">Built for Vercel Deployment</span>
         </div>
       </div>

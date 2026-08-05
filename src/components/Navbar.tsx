@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Sparkles, UserCheck, Menu, X } from 'lucide-react';
+import { Sparkles, Users, Menu, X } from 'lucide-react';
 
 export const Navbar: React.FC = () => {
   const navigate = useNavigate();
@@ -80,11 +80,11 @@ export const Navbar: React.FC = () => {
 
         <div className="hidden md:flex items-center gap-4">
           <button
-            onClick={() => handleNav('/register')}
+            onClick={() => handleNav('/join')}
             className="px-5 py-2.5 rounded-xl font-semibold text-sm bg-[#C9A227] text-black hover:bg-[#d8b132] transition-all transform active:scale-95 shadow-md shadow-[#C9A227]/20 flex items-center gap-2"
           >
-            <UserCheck className="w-4 h-4" />
-            Register Now
+            <Users className="w-4 h-4" />
+            Join Us
           </button>
         </div>
 
@@ -107,18 +107,18 @@ export const Navbar: React.FC = () => {
             Home
           </button>
           <button
-            onClick={() => handleNav('/register')}
+            onClick={() => handleNav('/join')}
             className={`block w-full text-left px-3 py-2 rounded-lg text-base font-medium ${
-              isActive('/register') ? 'text-[#C9A227] bg-[#C9A227]/10' : 'text-gray-200'
+              isActive('/join') ? 'text-[#C9A227] bg-[#C9A227]/10' : 'text-gray-200'
             }`}
           >
-            Registration Form
+            Join Us
           </button>
           <button
-            onClick={() => handleNav('/register')}
+            onClick={() => handleNav('/join')}
             className="w-full mt-2 py-3 rounded-xl font-bold bg-[#C9A227] text-black text-center"
           >
-            Register Now
+            Join Us
           </button>
         </div>
       )}

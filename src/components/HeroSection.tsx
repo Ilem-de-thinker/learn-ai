@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowRight, Sparkles, Zap, MessageCircle } from 'lucide-react';
+import { ArrowRight, Sparkles, Zap, Users } from 'lucide-react';
 import { motion } from 'motion/react';
 
 export const HeroSection: React.FC = () => {
@@ -39,7 +39,7 @@ export const HeroSection: React.FC = () => {
             transition={{ duration: 0.6, delay: 0.2 }}
             className="text-lg sm:text-xl text-zinc-300 max-w-2xl mx-auto font-normal leading-relaxed"
           >
-            Register now for the upcoming training. Learn how to design, engineer, and deploy modern production web applications using Next.js and Tailwind CSS.
+            Join us for the upcoming training. Learn how to design, engineer, and deploy modern production web applications using Next.js and Tailwind CSS.
           </motion.p>
 
           <motion.div 
@@ -50,12 +50,12 @@ export const HeroSection: React.FC = () => {
           >
             <button
               onClick={() => {
-                navigate('/register');
+                navigate('/join');
                 window.scrollTo({ top: 0, behavior: 'smooth' });
               }}
               className="w-full sm:w-auto px-10 py-5 rounded-2xl font-bold text-lg bg-[#C9A227] text-black hover:bg-[#dbb431] transition-all transform hover:scale-[1.02] active:scale-95 gold-glow flex items-center justify-center gap-3 shadow-xl"
             >
-              <span>Register Now</span>
+              <span>Join Us</span>
               <ArrowRight className="w-5 h-5 stroke-[2.5]" />
             </button>
             <a
@@ -64,7 +64,7 @@ export const HeroSection: React.FC = () => {
               rel="noopener noreferrer"
               className="w-full sm:w-auto px-10 py-5 rounded-2xl font-bold text-lg bg-zinc-900 text-zinc-100 hover:bg-zinc-800 transition-all border border-zinc-700 hover:border-[#C9A227]/50 flex items-center justify-center gap-3"
             >
-              <MessageCircle className="w-5 h-5" />
+              <Users className="w-5 h-5" />
               <span>Join WhatsApp Group</span>
             </a>
           </motion.div>

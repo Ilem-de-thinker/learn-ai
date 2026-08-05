@@ -220,7 +220,7 @@ export const CourseOverview: React.FC = () => {
       <section className="space-y-8 max-w-3xl mx-auto">
         <div className="text-center space-y-3">
           <h2 className="text-3xl font-bold text-white">Frequently Asked Questions</h2>
-          <p className="text-zinc-400 text-sm">Everything you need to know about the upcoming registration.</p>
+          <p className="text-zinc-400 text-sm">Everything you need to know about the upcoming cohort.</p>
         </div>
 
         <div className="space-y-4">
@@ -254,18 +254,18 @@ export const CourseOverview: React.FC = () => {
         <div className="space-y-2">
           <h3 className="text-2xl sm:text-3xl font-extrabold text-white">Ready to Build Your First Web App?</h3>
           <p className="text-zinc-400 text-sm max-w-lg mx-auto">
-            Reserve your seat now before the live cohort capacity is filled.
+            Join the community and get notified when the live cohort opens.
           </p>
         </div>
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
           <button
             onClick={() => {
-              navigate('/register');
+              navigate('/join');
               window.scrollTo({ top: 0, behavior: 'smooth' });
             }}
             className="px-8 py-4 rounded-xl font-bold text-base bg-[#C9A227] text-black hover:bg-[#d8b132] transition-all transform hover:scale-105 gold-glow shadow-lg inline-flex items-center gap-2"
           >
-            <span>Register For Upcoming Cohort</span>
+            <span>Join Us Now</span>
           </button>
           <a
             href="https://chat.whatsapp.com/HsrZXo4d6zR6Tbl9v9xrpd"
